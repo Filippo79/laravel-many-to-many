@@ -46,7 +46,28 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:200',
+            'body' => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'tags' => 'required|array',
+            'photos' => 'required|array',
+            'tags.*' => 'exists:tags,id',
+            'photos.*' => 'exists:photos,id'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.pages.create')
+            ->withErrors($validator)
+                ->withInput();
+        }
+        dd('Ma che c...............');
+        // $page = new Page;
+        // $page->fill($data);
+        // $saved = $page->save();
+        // return redirect()->route('admin.pages.show', $page->id);
 
     }
 
@@ -58,7 +79,7 @@ class PageController extends Controller
      */
     public function show($id)
     {
-        //
+
     }
 
     /**
