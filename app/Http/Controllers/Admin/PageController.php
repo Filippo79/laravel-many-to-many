@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use App\User;
 use App\Page;
 use App\Category;
@@ -22,7 +23,11 @@ class PageController extends Controller
      */
     public function index()
     {
-        //
+        $pages = Page::all();
+
+
+        return view('admin.pages.index', compact('pages'));
+
     }
 
     /**
@@ -46,9 +51,9 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
-
+        $data = $request->all();
         // dd($request->all());
-        $validator = Validator::make($request->all(), [
+        $validator = Validator::make($data, [
             'title' => 'required|max:200',
             'body' => 'required',
             'category_id' => 'required|exists:categories,id',
@@ -61,13 +66,23 @@ class PageController extends Controller
         if ($validator->fails()) {
             return redirect()->route('admin.pages.create')
             ->withErrors($validator)
-                ->withInput();
+            ->withInput();
         }
-        dd('Ma che c...............');
-        // $page = new Page;
-        // $page->fill($data);
-        // $saved = $page->save();
-        // return redirect()->route('admin.pages.show', $page->id);
+        // dd('Ma che c..........OK :-)');
+        $page = new Page;
+        $data['slug'] = $data['slug'] = Str::slug($data['title'] , '-');
+        $data['user_id'] = Auth::id();// persona user che ha creato la pagina in questo momento
+        $page->fill($data);
+        $saved = $page->save();
+        if (!$saved) {
+            dd('Ma dove vuoi andare!!!!');
+        }
+
+
+        $page->tags()->attach($data['tags']);
+        $page->photos()->attach($data['photos']);
+
+        return redirect()->route('admin.pages.show', $page->id);
 
     }
 
@@ -79,6 +94,10 @@ class PageController extends Controller
      */
     public function show($id)
     {
+        $page = Page::findOrFail($id);
+
+        return view('admin.pages.show', compact('page'));
+
 
     }
 

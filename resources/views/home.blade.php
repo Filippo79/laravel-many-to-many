@@ -4,6 +4,11 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
+            <ul class="nav nav-tabs ">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{route('admin.pages.index')}}"> Store</a>
+                </li>
+            </ul>
             <div class="card">
                 <div class="card-header">Dashboard</div>
 
